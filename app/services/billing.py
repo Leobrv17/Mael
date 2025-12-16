@@ -31,9 +31,9 @@ def build_invoice_pdf(invoice: Invoice) -> bytes:
     pdf.cell(200, 10, txt=f"Invoice {invoice.number}", ln=True, align="L")
     pdf.cell(200, 10, txt=f"Status: {invoice.status}", ln=True, align="L")
     pdf.cell(200, 10, txt=f"Title: {invoice.title}", ln=True, align="L")
-    for line in invoice.lines:
+    for line in invoice.__dict__.get("lines", []) or []:
         pdf.cell(200, 10, txt=f"{line.description} - {line.quantity} x {line.unit_price}", ln=True)
-    return pdf.output(dest="S").encode("latin1")
+    return bytes(pdf.output(dest="S"))
 
 
 async def issue_invoice(session: AsyncSession, invoice: Invoice) -> Invoice:

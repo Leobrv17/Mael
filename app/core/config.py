@@ -12,8 +12,8 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", case_sensitive=False)
 
     app_name: str = "SaaS Backend"
-    database_url: str = Field(alias="DATABASE_URL")
-    firebase_project_id: str = Field(alias="FIREBASE_PROJECT_ID")
+    database_url: str = Field(default="sqlite+aiosqlite:///:memory:", alias="DATABASE_URL")
+    firebase_project_id: str = Field(default="local-test-project", alias="FIREBASE_PROJECT_ID")
     firebase_credentials_path: str | None = Field(default=None, alias="FIREBASE_CREDENTIALS_PATH")
     app_base_url: str = Field(default="http://localhost:8000", alias="APP_BASE_URL")
     cors_origins: str = Field(default="*", alias="CORS_ORIGINS")

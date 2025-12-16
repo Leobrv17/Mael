@@ -24,7 +24,6 @@ class TicketOut(TicketBase):
     project_id: int
     created_at: datetime
     updated_at: datetime
-    assignees: Sequence[int] = ()
 
     model_config = {"from_attributes": True}
 

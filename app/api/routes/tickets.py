@@ -7,7 +7,14 @@ from app.models.kanban import KanbanColumn
 from app.models.notification import Event
 from app.models.project import ProjectMembership, ProjectRole
 from app.models.ticket import Ticket, TicketComment
-from app.schemas.ticket import CommentBase, CommentOut, TicketCreate, TicketMove, TicketOut, TicketTimeSegmentOut
+from app.schemas.ticket import (
+    CommentBase,
+    CommentOut,
+    TicketCreate,
+    TicketMove,
+    TicketOut,
+    TicketTimeSegmentOut,
+)
 from app.services.time_tracking import start_timer, stop_timer
 
 router = APIRouter(prefix="/tickets")
@@ -41,7 +48,7 @@ async def create_ticket(
     session.add(Event(ticket_id=ticket.id, action="created", actor_id=current_user.id))
     await session.commit()
     await session.refresh(ticket)
-    return ticket
+    return TicketOut.model_validate(ticket, from_attributes=True)
 
 
 @router.post("/{ticket_id}/move", response_model=TicketOut)
@@ -67,7 +74,7 @@ async def move_ticket(
     session.add(Event(ticket_id=ticket.id, action="moved", actor_id=current_user.id, details=str(payload.column_id)))
     await session.commit()
     await session.refresh(ticket)
-    return ticket
+    return TicketOut.model_validate(ticket, from_attributes=True)
 
 
 @router.post("/{ticket_id}/comments", response_model=CommentOut)

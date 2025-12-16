@@ -18,26 +18,43 @@ def event_loop():
 
 
 @pytest.fixture(scope="session")
-async def test_engine():
+def test_engine(event_loop):
     engine = create_async_engine("sqlite+aiosqlite:///:memory:", echo=False)
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+
+    async def _init_models():
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+
+    event_loop.run_until_complete(_init_models())
     yield engine
-    await engine.dispose()
+    event_loop.run_until_complete(engine.dispose())
+
+
+@pytest.fixture(scope="session")
+def session_factory(test_engine):
+    return async_sessionmaker(bind=test_engine, expire_on_commit=False, class_=AsyncSession)
 
 
 @pytest.fixture
-async def db_session(test_engine):
-    maker = async_sessionmaker(bind=test_engine, expire_on_commit=False, class_=AsyncSession)
-    async with maker() as session:
+def db_session(event_loop, session_factory):
+    async def _get_session():
+        async with session_factory() as session:
+            yield session
+
+    session_gen = _get_session()
+    session = event_loop.run_until_complete(session_gen.__anext__())
+    try:
         yield session
-        await session.rollback()
+    finally:
+        event_loop.run_until_complete(session.rollback())
+        event_loop.run_until_complete(session_gen.aclose())
 
 
 @pytest.fixture
-def client(db_session, monkeypatch):
+def client(session_factory, monkeypatch):
     async def _get_db_override():
-        yield db_session
+        async with session_factory() as session:
+            yield session
 
     app.dependency_overrides[get_db] = _get_db_override
     os.environ["FIREBASE_EMULATED_UID"] = "test-user"
