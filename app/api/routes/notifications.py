@@ -5,11 +5,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.deps import get_current_user, get_db
 from app.models.notification import Notification
 from app.schemas.common import Message
+from app.schemas.notification import NotificationOut
 
 router = APIRouter(prefix="/notifications")
 
 
-@router.get("/", response_model=list[Notification])
+@router.get("/", response_model=list[NotificationOut])
 async def list_notifications(
     session: AsyncSession = Depends(get_db), current_user=Depends(get_current_user)
 ):

@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from enum import Enum
 
-from sqlalchemy import DateTime, Enum as PgEnum, ForeignKey, Integer, String, Table, Text
+from sqlalchemy import Column, DateTime, Enum as PgEnum, ForeignKey, Integer, String, Table, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.session import Base
@@ -12,8 +12,8 @@ from app.db.session import Base
 ticket_assignees_table = Table(
     "ticket_assignees",
     Base.metadata,
-    mapped_column("ticket_id", ForeignKey("tickets.id", ondelete="CASCADE"), primary_key=True),
-    mapped_column("user_id", ForeignKey("users.id", ondelete="CASCADE"), primary_key=True),
+    Column("ticket_id", ForeignKey("tickets.id", ondelete="CASCADE"), primary_key=True),
+    Column("user_id", ForeignKey("users.id", ondelete="CASCADE"), primary_key=True),
 )
 
 

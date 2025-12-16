@@ -28,7 +28,7 @@ async def create_quote(
         session.add(QuoteLine(quote_id=quote.id, **line.model_dump()))
     await session.commit()
     await session.refresh(quote)
-    return quote
+    return QuoteOut.model_validate(quote, from_attributes=True)
 
 
 @router.post("/quotes/{quote_id}/accept", response_model=QuoteOut)
@@ -43,7 +43,7 @@ async def accept_quote_endpoint(
     await accept_quote(session, quote, ip="0.0.0.0", user_id=current_user.id)
     await session.commit()
     await session.refresh(quote)
-    return quote
+    return QuoteOut.model_validate(quote, from_attributes=True)
 
 
 @router.post("/invoices", response_model=InvoiceOut)
@@ -59,7 +59,7 @@ async def create_invoice(
         session.add(InvoiceLine(invoice_id=invoice.id, **line.model_dump()))
     await session.commit()
     await session.refresh(invoice)
-    return invoice
+    return InvoiceOut.model_validate(invoice, from_attributes=True)
 
 
 @router.post("/invoices/{invoice_id}/issue", response_model=InvoiceOut)
@@ -74,7 +74,7 @@ async def issue_invoice_endpoint(
     await issue_invoice(session, invoice)
     await session.commit()
     await session.refresh(invoice)
-    return invoice
+    return InvoiceOut.model_validate(invoice, from_attributes=True)
 
 
 @router.get("/invoices/{invoice_id}/pdf")

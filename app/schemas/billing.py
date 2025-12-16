@@ -28,7 +28,6 @@ class QuoteOut(BaseModel):
     status: QuoteStatus
     valid_until: datetime | None
     created_at: datetime
-    lines: Sequence[QuoteLineCreate]
 
     model_config = {"from_attributes": True}
 

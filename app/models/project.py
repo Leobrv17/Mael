@@ -26,6 +26,7 @@ class Project(Base):
     description: Mapped[str | None] = mapped_column(String(500))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)
 
+    organization: Mapped["Organization"] = relationship("Organization", back_populates="projects")
     memberships: Mapped[list[ProjectMembership]] = relationship(
         "ProjectMembership", back_populates="project", cascade="all, delete-orphan"
     )
