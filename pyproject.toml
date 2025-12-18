@@ -3,9 +3,9 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "saas-backend"
+name = "mael-backend"
 version = "0.1.0"
-description = "SaaS backend for portfolio and client workspace"
+description = "Mael backend for portfolio and client workspace"
 authors = [{name="Auto Entrepreneur"}]
 requires-python = ">=3.12"
 dependencies = [

@@ -7,7 +7,7 @@ from app.core.logging import setup_logging
 from app.core.security import apply_middlewares
 
 setup_logging()
-app = FastAPI(title="SaaS Backend", version="1.0.0")
+app = FastAPI(title="Mael API", version="1.0.0")
 apply_middlewares(app)
 app.include_router(routes.api_router)
 

@@ -1,55 +1,59 @@
-# SaaS Backend (FastAPI + PostgreSQL)
+# Mael API
 
-Backend pour site vitrine + espace client + gestion de projets Scrum/Kanban + facturation.
+## Overview (English)
+Mael is a FastAPI backend for a SaaS portfolio, client workspace, Scrum/Kanban project tracking, and billing. The service ships with Firebase authentication, PostgreSQL via SQLAlchemy/Alembic, and Docker support for quick local runs.
 
-## Stack
+> Looking for French? See [README_FR.md](README_FR.md).
+
+### Tech stack
 - Python 3.12, FastAPI
-- PostgreSQL + SQLAlchemy 2.0 (async) + Alembic
+- PostgreSQL with SQLAlchemy 2 (async) and Alembic migrations
 - Firebase Authentication (ID Token)
 - Docker + docker-compose
 
-## Démarrage local
-1. Copier `.env.example` vers `.env` et ajuster les valeurs.
-2. Lancer `docker-compose up --build`.
-3. L'API est disponible sur `http://localhost:8000` avec documentation OpenAPI intégrée.
+### Local setup
+1. Copy `.env.example` to `.env` and adjust the values.
+2. Run `docker-compose up --build`.
+3. The API is available at `http://localhost:8000` with the Swagger UI served at `/docs`.
 
-Pour un lancement sans Docker :
+To start without Docker:
 ```bash
 pip install -e .[dev]
 uvicorn app.main:app --reload
 ```
 
-## Migrations
+### Migrations
 ```bash
 alembic upgrade head
 ```
 
-## Tests
+### Tests
 ```bash
 pytest
 ```
 
-## Authentification
-Toutes les routes `/api/v1` (sauf `/public`) nécessitent un header `Authorization: Bearer <idToken>` vérifié via Firebase Admin SDK. En test, définir `FIREBASE_EMULATED_UID` et utiliser le token `test-token`.
+### Authentication
+All `/api/v1` routes (except those under `/public`) require an `Authorization: Bearer <idToken>` header validated via the Firebase Admin SDK. For tests, set `FIREBASE_EMULATED_UID` and use the token `test-token`.
 
-## Principaux endpoints
-- `GET /api/v1/me` : profil courant
-- `POST /api/v1/organizations/` : créer une organisation (membre devient OWNER)
-- `POST /api/v1/projects/` : créer un projet dans une organisation
-- `POST /api/v1/tickets/` : créer un ticket
-- `POST /api/v1/tickets/{id}/move` : déplacer un ticket (démarre/arrête le time tracking)
-- `POST /api/v1/billing/invoices` + `/issue` : créer et émettre une facture (PDF embarqué)
-- `GET /api/v1/notifications/` : notifications in-app
-- `POST /api/v1/public/leads` : leads publics avec rate-limiting simple
+### Key endpoints
+See `documentation/en/routes.md` for a full route catalog. Highlights include:
+- `GET /api/v1/me`: current profile
+- `POST /api/v1/organizations/`: create an organization (creator becomes OWNER)
+- `POST /api/v1/projects/`: create a project inside an organization
+- `POST /api/v1/tickets/`: create a ticket
+- `POST /api/v1/tickets/{id}/move`: move a ticket (starts/stops time tracking)
+- `POST /api/v1/billing/invoices` + `/issue`: create and issue an invoice (embedded PDF)
+- `GET /api/v1/notifications/`: in-app notifications
+- `POST /api/v1/public/leads`: public leads with basic rate limiting
 
-## Conventions
-- Code typé (mypy-friendly), lint via ruff.
-- Logs structurés JSON.
-- Time tracking automatique lors des transitions IN_PROGRESS → DONE.
-- Factures verrouillées après émission et PDF généré (fpdf2).
-- Mentions légales : champ `legal_mentions` prévu + ajout automatique de numéro séquentiel par organisation.
+### Conventions
+- Typed code (mypy-friendly), lint via ruff.
+- JSON-structured logs.
+- Automatic time tracking on IN_PROGRESS → DONE transitions.
+- Invoices locked after issuance with generated PDFs (fpdf2).
+- Legal mentions handled via the `legal_mentions` field and sequential numbers per organization.
 
-## Notes conformité
-- Prévoit e-invoicing via `e_invoicing_required_at` dans `organizations`.
-- EmailOutbox pour envoi asynchrone sans bloquer les requêtes.
-- CORS configurables via env `CORS_ORIGINS`.
+### Compliance notes
+- E-invoicing readiness through `e_invoicing_required_at` on `organizations`.
+- `EmailOutbox` for asynchronous email delivery.
+- CORS configurable through the `CORS_ORIGINS` environment variable.
