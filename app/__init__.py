@@ -1,1 +1,1 @@
-"""SaaS backend package."""
+"""Mael backend package."""
